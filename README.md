@@ -4,7 +4,7 @@
 ![Spring Boot](https://img.shields.io/badge/Spring%20Boot-3.5.16-brightgreen)
 ![React](https://img.shields.io/badge/React-19-61DAFB)
 ![MongoDB](https://img.shields.io/badge/MongoDB-8-47A248)
-![Tests](https://img.shields.io/badge/tests-14%2F14%20passing-success)
+![Tests](https://img.shields.io/badge/tests-16%2F16%20passing-success)
 
 Smart campus resource management and booking system — solo build, own
 implementation from scratch. Same problem space as a typical university
@@ -37,7 +37,7 @@ its own pull request.
 |---|---|---|
 | [#1](https://github.com/nilushamadhuwanthi123/uninex-campus-hub/issues/1) | Resource & seat management (admin CRUD) | ✅ Done |
 | [#2](https://github.com/nilushamadhuwanthi123/uninex-campus-hub/issues/2) | Booking system: time slots + full-hall reservation | ✅ Done |
-| [#3](https://github.com/nilushamadhuwanthi123/uninex-campus-hub/issues/3) | Admin approval workflow + QR ticket generation | ⏳ Planned |
+| [#3](https://github.com/nilushamadhuwanthi123/uninex-campus-hub/issues/3) | Admin approval workflow + QR ticket generation | ✅ Done |
 | [#4](https://github.com/nilushamadhuwanthi123/uninex-campus-hub/issues/4) | Incident ticket system with technician assignment | ⏳ Planned |
 | [#5](https://github.com/nilushamadhuwanthi123/uninex-campus-hub/issues/5) | Google OAuth2 login + role-based access | ⏳ Planned |
 | [#6](https://github.com/nilushamadhuwanthi123/uninex-campus-hub/issues/6) | Review, rating and feedback system | ⏳ Planned |
@@ -67,6 +67,8 @@ rejected with `409 Conflict`.
 | `GET` | `/api/bookings/{id}` | Get one booking |
 | `POST` | `/api/bookings` | Create a booking (`201`, `409` on conflict) |
 | `POST` | `/api/bookings/{id}/cancel` | Cancel a booking |
+| `POST` | `/api/bookings/{id}/approve` | Admin: approve + generate a QR ticket |
+| `POST` | `/api/bookings/{id}/reject` | Admin: reject a booking |
 
 ## Running locally
 
