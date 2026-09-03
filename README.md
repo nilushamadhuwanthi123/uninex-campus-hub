@@ -4,7 +4,7 @@
 ![Spring Boot](https://img.shields.io/badge/Spring%20Boot-3.5.16-brightgreen)
 ![React](https://img.shields.io/badge/React-19-61DAFB)
 ![MongoDB](https://img.shields.io/badge/MongoDB-8-47A248)
-![Tests](https://img.shields.io/badge/tests-31%2F31%20passing-success)
+![Tests](https://img.shields.io/badge/tests-33%2F33%20passing-success)
 
 Smart campus resource management and booking system — solo build, own
 implementation from scratch. Same problem space as a typical university
@@ -41,7 +41,7 @@ its own pull request.
 | [#4](https://github.com/nilushamadhuwanthi123/uninex-campus-hub/issues/4) | Incident ticket system with technician assignment | ✅ Done |
 | [#5](https://github.com/nilushamadhuwanthi123/uninex-campus-hub/issues/5) | Google OAuth2 login + role-based access | ✅ Done |
 | [#6](https://github.com/nilushamadhuwanthi123/uninex-campus-hub/issues/6) | Review, rating and feedback system | ✅ Done |
-| [#7](https://github.com/nilushamadhuwanthi123/uninex-campus-hub/issues/7) | Analytics dashboard for usage insights | ⏳ Planned |
+| [#7](https://github.com/nilushamadhuwanthi123/uninex-campus-hub/issues/7) | Analytics dashboard for usage insights | ✅ Done |
 | [#8](https://github.com/nilushamadhuwanthi123/uninex-campus-hub/issues/8) | Real-time notifications | ⏳ Planned |
 
 ## API (so far)
@@ -94,6 +94,13 @@ stored, so it can't drift out of sync.
 | `GET` | `/api/reviews/summary?resourceId=` | Average rating + review count for a resource |
 | `POST` | `/api/reviews` | Leave a review (`201`) |
 | `DELETE` | `/api/reviews/{id}` | Remove a review (moderation, STAFF/ADMIN only) |
+
+`Analytics` = a usage-insights summary computed live from real bookings,
+incidents and reviews (staff/admin only).
+
+| Method | Endpoint | Description |
+|---|---|---|
+| `GET` | `/api/analytics/summary` | Booking/incident counts by status, average incident resolution time, overall average rating (STAFF/ADMIN only) |
 
 `Auth` = the currently logged-in user's own identity, via Google OAuth2
 login. Every user starts as `STUDENT` on first login; `STAFF`/`ADMIN` is
@@ -152,7 +159,7 @@ cd backend
 ./mvnw test
 ```
 
-31/31 tests passing as of the latest run — unit tests for the service layer
+33/33 tests passing as of the latest run — unit tests for the service layer
 (including the Google login → role mapping logic) plus real database-backed
 integration tests (embedded MongoDB, no external setup needed). Full
 breakdown, coverage, and known gaps are tracked honestly in
