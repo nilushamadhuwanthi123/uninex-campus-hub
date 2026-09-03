@@ -32,21 +32,26 @@ public class SecurityConfig {
         http
             .csrf(csrf -> csrf.disable())
             .authorizeHttpRequests(auth -> auth
-                // Public read access -- anyone can browse resources/bookings/incidents.
-                .requestMatchers(HttpMethod.GET, "/api/resources/**", "/api/bookings/**", "/api/incidents/**").permitAll()
+                // Public read access -- anyone can browse resources/bookings/incidents/reviews.
+                .requestMatchers(HttpMethod.GET, "/api/resources/**", "/api/bookings/**",
+                    "/api/incidents/**", "/api/reviews/**").permitAll()
                 .requestMatchers("/api/auth/me").permitAll()
 
                 // Staff/admin-only actions -- must be listed before the broader
-                // POST rules below so they aren't shadowed.
+                // POST/DELETE rules below so they aren't shadowed.
                 .requestMatchers("/api/bookings/*/approve", "/api/bookings/*/reject").hasAnyRole("STAFF", "ADMIN")
                 .requestMatchers("/api/incidents/*/assign", "/api/incidents/*/start",
                     "/api/incidents/*/resolve", "/api/incidents/*/close").hasAnyRole("STAFF", "ADMIN")
                 .requestMatchers(HttpMethod.POST, "/api/resources/**").hasAnyRole("STAFF", "ADMIN")
                 .requestMatchers(HttpMethod.PUT, "/api/resources/**").hasAnyRole("STAFF", "ADMIN")
                 .requestMatchers(HttpMethod.DELETE, "/api/resources/**").hasAnyRole("STAFF", "ADMIN")
+                // Removing someone else's review is moderation, not self-service.
+                .requestMatchers(HttpMethod.DELETE, "/api/reviews/**").hasAnyRole("STAFF", "ADMIN")
 
-                // Any logged-in user can request a booking or report an incident.
-                .requestMatchers(HttpMethod.POST, "/api/bookings/**", "/api/incidents/**").authenticated()
+                // Any logged-in user can request a booking, report an incident,
+                // or leave a review.
+                .requestMatchers(HttpMethod.POST, "/api/bookings/**", "/api/incidents/**", "/api/reviews/**")
+                    .authenticated()
 
                 .anyRequest().authenticated()
             )
