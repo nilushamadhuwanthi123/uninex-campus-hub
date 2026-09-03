@@ -1,0 +1,14 @@
+@import "tailwindcss";
+
+@theme {
+  --color-navy: #0b0d0a;
+  --color-navy-soft: #14140f;
+  --color-gold: #c9a85c;
+  --color-cream: #e8dcc0;
+  --color-bronze-dark: #3a2f17;
+  --color-bronze-mid: #7a5e22;
+}
+
+body {
+  @apply bg-navy text-cream antialiased;
+}

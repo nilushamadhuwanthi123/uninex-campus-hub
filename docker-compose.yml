@@ -1,0 +1,11 @@
+services:
+  mongo:
+    image: mongo:8
+    container_name: uninex-mongo
+    ports:
+      - "27017:27017"
+    volumes:
+      - uninex-mongo-data:/data/db
+
+volumes:
+  uninex-mongo-data:
