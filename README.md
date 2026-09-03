@@ -4,7 +4,7 @@
 ![Spring Boot](https://img.shields.io/badge/Spring%20Boot-3.5.16-brightgreen)
 ![React](https://img.shields.io/badge/React-19-61DAFB)
 ![MongoDB](https://img.shields.io/badge/MongoDB-8-47A248)
-![Tests](https://img.shields.io/badge/tests-16%2F16%20passing-success)
+![Tests](https://img.shields.io/badge/tests-22%2F22%20passing-success)
 
 Smart campus resource management and booking system — solo build, own
 implementation from scratch. Same problem space as a typical university
@@ -38,7 +38,7 @@ its own pull request.
 | [#1](https://github.com/nilushamadhuwanthi123/uninex-campus-hub/issues/1) | Resource & seat management (admin CRUD) | ✅ Done |
 | [#2](https://github.com/nilushamadhuwanthi123/uninex-campus-hub/issues/2) | Booking system: time slots + full-hall reservation | ✅ Done |
 | [#3](https://github.com/nilushamadhuwanthi123/uninex-campus-hub/issues/3) | Admin approval workflow + QR ticket generation | ✅ Done |
-| [#4](https://github.com/nilushamadhuwanthi123/uninex-campus-hub/issues/4) | Incident ticket system with technician assignment | ⏳ Planned |
+| [#4](https://github.com/nilushamadhuwanthi123/uninex-campus-hub/issues/4) | Incident ticket system with technician assignment | ✅ Done |
 | [#5](https://github.com/nilushamadhuwanthi123/uninex-campus-hub/issues/5) | Google OAuth2 login + role-based access | ⏳ Planned |
 | [#6](https://github.com/nilushamadhuwanthi123/uninex-campus-hub/issues/6) | Review, rating and feedback system | ⏳ Planned |
 | [#7](https://github.com/nilushamadhuwanthi123/uninex-campus-hub/issues/7) | Analytics dashboard for usage insights | ⏳ Planned |
@@ -69,6 +69,19 @@ rejected with `409 Conflict`.
 | `POST` | `/api/bookings/{id}/cancel` | Cancel a booking |
 | `POST` | `/api/bookings/{id}/approve` | Admin: approve + generate a QR ticket |
 | `POST` | `/api/bookings/{id}/reject` | Admin: reject a booking |
+
+`Incident` = a maintenance/fault report against a resource, with severity
+and a lifecycle from report to resolution.
+
+| Method | Endpoint | Description |
+|---|---|---|
+| `GET` | `/api/incidents` | List all incidents (optional `?resourceId=` or `?status=`) |
+| `GET` | `/api/incidents/{id}` | Get one incident |
+| `POST` | `/api/incidents` | Report an incident (`201`) |
+| `POST` | `/api/incidents/{id}/assign` | Assign a technician (body: `{"technicianName": "..."}`) |
+| `POST` | `/api/incidents/{id}/start` | Mark work in progress (`409` if unassigned) |
+| `POST` | `/api/incidents/{id}/resolve` | Mark resolved |
+| `POST` | `/api/incidents/{id}/close` | Close the ticket |
 
 ## Running locally
 
