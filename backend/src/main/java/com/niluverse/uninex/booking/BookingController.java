@@ -36,4 +36,18 @@ public class BookingController {
         service.cancel(id);
         return service.findById(id);
     }
+
+    /**
+     * Admin-only actions (no auth enforcement yet -- SecurityConfig is a
+     * permitAll placeholder pending Issue #5's Google OAuth2 + roles).
+     */
+    @PostMapping("/{id}/approve")
+    public Booking approve(@PathVariable String id) {
+        return service.approve(id);
+    }
+
+    @PostMapping("/{id}/reject")
+    public Booking reject(@PathVariable String id) {
+        return service.reject(id);
+    }
 }
