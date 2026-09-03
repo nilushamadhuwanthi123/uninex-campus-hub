@@ -4,7 +4,7 @@
 ![Spring Boot](https://img.shields.io/badge/Spring%20Boot-3.5.16-brightgreen)
 ![React](https://img.shields.io/badge/React-19-61DAFB)
 ![MongoDB](https://img.shields.io/badge/MongoDB-8-47A248)
-![Tests](https://img.shields.io/badge/tests-25%2F25%20passing-success)
+![Tests](https://img.shields.io/badge/tests-31%2F31%20passing-success)
 
 Smart campus resource management and booking system — solo build, own
 implementation from scratch. Same problem space as a typical university
@@ -40,7 +40,7 @@ its own pull request.
 | [#3](https://github.com/nilushamadhuwanthi123/uninex-campus-hub/issues/3) | Admin approval workflow + QR ticket generation | ✅ Done |
 | [#4](https://github.com/nilushamadhuwanthi123/uninex-campus-hub/issues/4) | Incident ticket system with technician assignment | ✅ Done |
 | [#5](https://github.com/nilushamadhuwanthi123/uninex-campus-hub/issues/5) | Google OAuth2 login + role-based access | ✅ Done |
-| [#6](https://github.com/nilushamadhuwanthi123/uninex-campus-hub/issues/6) | Review, rating and feedback system | ⏳ Planned |
+| [#6](https://github.com/nilushamadhuwanthi123/uninex-campus-hub/issues/6) | Review, rating and feedback system | ✅ Done |
 | [#7](https://github.com/nilushamadhuwanthi123/uninex-campus-hub/issues/7) | Analytics dashboard for usage insights | ⏳ Planned |
 | [#8](https://github.com/nilushamadhuwanthi123/uninex-campus-hub/issues/8) | Real-time notifications | ⏳ Planned |
 
@@ -82,6 +82,18 @@ and a lifecycle from report to resolution.
 | `POST` | `/api/incidents/{id}/start` | Mark work in progress (`409` if unassigned) |
 | `POST` | `/api/incidents/{id}/resolve` | Mark resolved |
 | `POST` | `/api/incidents/{id}/close` | Close the ticket |
+
+`Review` = a rating (1-5) and optional comment left against a resource.
+The average rating is computed on every read from the real reviews, never
+stored, so it can't drift out of sync.
+
+| Method | Endpoint | Description |
+|---|---|---|
+| `GET` | `/api/reviews` | List all reviews (optional `?resourceId=`) |
+| `GET` | `/api/reviews/{id}` | Get one review |
+| `GET` | `/api/reviews/summary?resourceId=` | Average rating + review count for a resource |
+| `POST` | `/api/reviews` | Leave a review (`201`) |
+| `DELETE` | `/api/reviews/{id}` | Remove a review (moderation, STAFF/ADMIN only) |
 
 `Auth` = the currently logged-in user's own identity, via Google OAuth2
 login. Every user starts as `STUDENT` on first login; `STAFF`/`ADMIN` is
@@ -140,7 +152,7 @@ cd backend
 ./mvnw test
 ```
 
-25/25 tests passing as of the latest run — unit tests for the service layer
+31/31 tests passing as of the latest run — unit tests for the service layer
 (including the Google login → role mapping logic) plus real database-backed
 integration tests (embedded MongoDB, no external setup needed). Full
 breakdown, coverage, and known gaps are tracked honestly in
