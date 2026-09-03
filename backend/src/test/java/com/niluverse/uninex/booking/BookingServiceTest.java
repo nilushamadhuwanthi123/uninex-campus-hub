@@ -22,6 +22,9 @@ class BookingServiceTest {
     @Mock
     private BookingRepository repository;
 
+    @Mock
+    private QrCodeGenerator qrCodeGenerator;
+
     private BookingService service;
 
     private final Instant future1h = Instant.now().plus(1, ChronoUnit.HOURS);
@@ -30,7 +33,7 @@ class BookingServiceTest {
 
     @BeforeEach
     void setUp() {
-        service = new BookingService(repository);
+        service = new BookingService(repository, qrCodeGenerator);
     }
 
     @Test
@@ -117,5 +120,33 @@ class BookingServiceTest {
         Booking created = service.create(request);
 
         assertThat(created).isNotNull();
+    }
+
+    @Test
+    void approve_setsStatusAndGeneratesTicketAndQrCode() {
+        Booking booking = new Booking("hall-1", List.of("A1"), future1h, future2h, "Nilusha", "n@x.com");
+        booking.setId("b1");
+        when(repository.findById("b1")).thenReturn(java.util.Optional.of(booking));
+        when(repository.save(any(Booking.class))).thenAnswer(inv -> inv.getArgument(0));
+        when(qrCodeGenerator.generateBase64Png(any())).thenReturn("fake-base64-png");
+
+        Booking approved = service.approve("b1");
+
+        assertThat(approved.getStatus()).isEqualTo(BookingStatus.APPROVED);
+        assertThat(approved.getTicketCode()).startsWith("UNX-");
+        assertThat(approved.getQrCodeBase64()).isEqualTo("fake-base64-png");
+    }
+
+    @Test
+    void reject_setsStatus_withoutGeneratingTicket() {
+        Booking booking = new Booking("hall-1", List.of("A1"), future1h, future2h, "Nilusha", "n@x.com");
+        booking.setId("b2");
+        when(repository.findById("b2")).thenReturn(java.util.Optional.of(booking));
+        when(repository.save(any(Booking.class))).thenAnswer(inv -> inv.getArgument(0));
+
+        Booking rejected = service.reject("b2");
+
+        assertThat(rejected.getStatus()).isEqualTo(BookingStatus.REJECTED);
+        assertThat(rejected.getTicketCode()).isNull();
     }
 }
