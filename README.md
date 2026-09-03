@@ -109,7 +109,7 @@ cd backend
 ./mvnw test
 ```
 
-8/8 tests passing as of the latest run — unit tests for the service layer
+22/22 tests passing as of the latest run — unit tests for the service layer
 plus real database-backed integration tests (embedded MongoDB, no external
 setup needed). Full breakdown, coverage, and known gaps are tracked
 honestly in [`docs/TESTING.md`](docs/TESTING.md).
