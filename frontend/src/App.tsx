@@ -5,6 +5,9 @@ import BookingsPage from './pages/BookingsPage'
 import IncidentsPage from './pages/IncidentsPage'
 import ReviewsPage from './pages/ReviewsPage'
 import DashboardPage from './pages/DashboardPage'
+import AboutPage from './pages/AboutPage'
+import ContactPage from './pages/ContactPage'
+import Footer from './components/Footer'
 
 const TABS = [
   { key: 'home', label: 'Home', Page: HomePage },
@@ -13,6 +16,8 @@ const TABS = [
   { key: 'bookings', label: 'Bookings', Page: BookingsPage },
   { key: 'incidents', label: 'Incidents', Page: IncidentsPage },
   { key: 'reviews', label: 'Reviews', Page: ReviewsPage },
+  { key: 'about', label: 'About', Page: AboutPage },
+  { key: 'contact', label: 'Contact', Page: ContactPage },
 ] as const
 
 type TabKey = (typeof TABS)[number]['key']
@@ -24,11 +29,12 @@ function App() {
   function navigate(tab: string) {
     if (TABS.some((t) => t.key === tab)) {
       setActive(tab as TabKey)
+      window.scrollTo({ top: 0, behavior: 'smooth' })
     }
   }
 
   return (
-    <div className="min-h-screen">
+    <div className="flex min-h-screen flex-col">
       <header className="border-b border-gold/20 px-6 py-4">
         <p className="text-xs uppercase tracking-[0.3em] text-gold">Uninex</p>
         <h1 className="text-xl font-semibold text-cream">Campus Resource &amp; Booking Hub</h1>
@@ -50,9 +56,11 @@ function App() {
         ))}
       </nav>
 
-      <main className="mx-auto max-w-5xl px-6 py-8">
+      <main className="mx-auto w-full max-w-5xl flex-1 px-6 py-8">
         <ActivePage onNavigate={navigate} />
       </main>
+
+      <Footer onNavigate={navigate} />
     </div>
   )
 }
