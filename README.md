@@ -4,7 +4,7 @@
 ![Spring Boot](https://img.shields.io/badge/Spring%20Boot-3.5.16-brightgreen)
 ![React](https://img.shields.io/badge/React-19-61DAFB)
 ![MongoDB](https://img.shields.io/badge/MongoDB-8-47A248)
-![Tests](https://img.shields.io/badge/tests-8%2F8%20passing-success)
+![Tests](https://img.shields.io/badge/tests-14%2F14%20passing-success)
 
 Smart campus resource management and booking system — solo build, own
 implementation from scratch. Same problem space as a typical university
@@ -36,7 +36,7 @@ its own pull request.
 | # | Feature | Status |
 |---|---|---|
 | [#1](https://github.com/nilushamadhuwanthi123/uninex-campus-hub/issues/1) | Resource & seat management (admin CRUD) | ✅ Done |
-| [#2](https://github.com/nilushamadhuwanthi123/uninex-campus-hub/issues/2) | Booking system: time slots + full-hall reservation | ⏳ Planned |
+| [#2](https://github.com/nilushamadhuwanthi123/uninex-campus-hub/issues/2) | Booking system: time slots + full-hall reservation | ✅ Done |
 | [#3](https://github.com/nilushamadhuwanthi123/uninex-campus-hub/issues/3) | Admin approval workflow + QR ticket generation | ⏳ Planned |
 | [#4](https://github.com/nilushamadhuwanthi123/uninex-campus-hub/issues/4) | Incident ticket system with technician assignment | ⏳ Planned |
 | [#5](https://github.com/nilushamadhuwanthi123/uninex-campus-hub/issues/5) | Google OAuth2 login + role-based access | ⏳ Planned |
@@ -56,6 +56,17 @@ optional per-seat configuration.
 | `POST` | `/api/resources` | Create a resource (`201`) |
 | `PUT` | `/api/resources/{id}` | Update a resource |
 | `DELETE` | `/api/resources/{id}` | Delete a resource (`204`) |
+
+`Booking` = a reservation of a resource (or specific seats on it) for a
+time window. Overlapping bookings on the same resource and seats are
+rejected with `409 Conflict`.
+
+| Method | Endpoint | Description |
+|---|---|---|
+| `GET` | `/api/bookings` | List all bookings (optional `?resourceId=`) |
+| `GET` | `/api/bookings/{id}` | Get one booking |
+| `POST` | `/api/bookings` | Create a booking (`201`, `409` on conflict) |
+| `POST` | `/api/bookings/{id}/cancel` | Cancel a booking |
 
 ## Running locally
 
