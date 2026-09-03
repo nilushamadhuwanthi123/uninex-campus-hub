@@ -24,9 +24,9 @@ const FEATURES = [
 export default function HomePage({ onNavigate }: { onNavigate?: (tab: string) => void }) {
   return (
     <div className="space-y-10">
-      <div className="relative overflow-hidden rounded-lg border border-gold/20">
+      <div className="relative left-1/2 right-1/2 -mx-[50vw] w-screen overflow-hidden">
         <video
-          className="h-72 w-full object-cover sm:h-96"
+          className="h-[58vh] min-h-[380px] w-full object-cover object-center sm:h-[72vh]"
           src={heroVideo}
           poster={heroPoster}
           autoPlay
@@ -34,26 +34,27 @@ export default function HomePage({ onNavigate }: { onNavigate?: (tab: string) =>
           muted
           playsInline
         />
-        <div className="absolute inset-0 bg-gradient-to-t from-navy via-navy/60 to-navy/10" />
-        <div className="absolute inset-0 flex flex-col items-start justify-end p-6 sm:p-10">
+        <div className="absolute inset-0 bg-gradient-to-t from-navy via-navy/70 to-navy/20" />
+        <div className="absolute inset-0 bg-gradient-to-r from-navy/70 via-navy/10 to-transparent" />
+        <div className="absolute inset-0 flex flex-col items-start justify-end px-6 pb-10 sm:px-16 sm:pb-16">
           <p className="text-xs uppercase tracking-[0.3em] text-gold">Uninex</p>
-          <h2 className="mt-2 max-w-lg text-2xl font-semibold text-cream sm:text-3xl">
+          <h2 className="mt-2 max-w-xl text-3xl font-semibold text-cream sm:text-4xl">
             Book campus resources, report issues, and see it all update live.
           </h2>
-          <p className="mt-2 max-w-md text-sm text-cream/70">
+          <p className="mt-3 max-w-lg text-sm text-cream/70 sm:text-base">
             A real Spring Boot + MongoDB backend behind a real React frontend --
             every page on this site talks to the live API, nothing here is mocked.
           </p>
-          <div className="mt-5 flex gap-3">
+          <div className="mt-6 flex gap-3">
             <button
               onClick={() => onNavigate?.('resources')}
-              className="rounded bg-gold px-4 py-2 text-sm font-medium text-navy"
+              className="rounded bg-gold px-5 py-2.5 text-sm font-medium text-navy"
             >
               Browse resources
             </button>
             <button
               onClick={() => onNavigate?.('dashboard')}
-              className="rounded border border-gold/40 px-4 py-2 text-sm font-medium text-cream"
+              className="rounded border border-gold/40 px-5 py-2.5 text-sm font-medium text-cream"
             >
               Go to dashboard
             </button>
