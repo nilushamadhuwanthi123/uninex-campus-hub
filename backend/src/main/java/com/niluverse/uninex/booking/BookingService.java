@@ -1,5 +1,7 @@
 package com.niluverse.uninex.booking;
 
+import com.niluverse.uninex.notification.NotificationService;
+import com.niluverse.uninex.notification.NotificationType;
 import java.time.Instant;
 import java.util.HashSet;
 import java.util.List;
@@ -15,10 +17,13 @@ public class BookingService {
 
     private final BookingRepository repository;
     private final QrCodeGenerator qrCodeGenerator;
+    private final NotificationService notificationService;
 
-    public BookingService(BookingRepository repository, QrCodeGenerator qrCodeGenerator) {
+    public BookingService(BookingRepository repository, QrCodeGenerator qrCodeGenerator,
+                           NotificationService notificationService) {
         this.repository = repository;
         this.qrCodeGenerator = qrCodeGenerator;
+        this.notificationService = notificationService;
     }
 
     public List<Booking> findAll() {
@@ -79,11 +84,18 @@ public class BookingService {
         String ticketCode = "UNX-" + UUID.randomUUID().toString().substring(0, 8).toUpperCase();
         booking.setTicketCode(ticketCode);
         booking.setQrCodeBase64(qrCodeGenerator.generateBase64Png(ticketCode));
-        return repository.save(booking);
+        Booking saved = repository.save(booking);
+        notificationService.create(saved.getRequesterEmail(), NotificationType.BOOKING_APPROVED,
+            "Your booking for " + saved.getResourceId() + " was approved. Ticket: " + ticketCode,
+            saved.getId());
+        return saved;
     }
 
     public Booking reject(String id) {
-        return updateStatus(id, BookingStatus.REJECTED);
+        Booking booking = updateStatus(id, BookingStatus.REJECTED);
+        notificationService.create(booking.getRequesterEmail(), NotificationType.BOOKING_REJECTED,
+            "Your booking for " + booking.getResourceId() + " was rejected.", booking.getId());
+        return booking;
     }
 
     private boolean overlapsInTime(Booking a, Booking b) {

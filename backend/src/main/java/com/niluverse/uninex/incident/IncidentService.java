@@ -1,5 +1,7 @@
 package com.niluverse.uninex.incident;
 
+import com.niluverse.uninex.notification.NotificationService;
+import com.niluverse.uninex.notification.NotificationType;
 import java.time.Instant;
 import java.util.List;
 import org.springframework.stereotype.Service;
@@ -8,9 +10,11 @@ import org.springframework.stereotype.Service;
 public class IncidentService {
 
     private final IncidentRepository repository;
+    private final NotificationService notificationService;
 
-    public IncidentService(IncidentRepository repository) {
+    public IncidentService(IncidentRepository repository, NotificationService notificationService) {
         this.repository = repository;
+        this.notificationService = notificationService;
     }
 
     public List<Incident> findAll() {
@@ -42,7 +46,10 @@ public class IncidentService {
         Incident incident = findById(id);
         incident.setAssignedTechnician(technicianName);
         incident.setStatus(IncidentStatus.ASSIGNED);
-        return repository.save(incident);
+        Incident saved = repository.save(incident);
+        notificationService.create(saved.getReporterEmail(), NotificationType.INCIDENT_ASSIGNED,
+            technicianName + " was assigned to your report: " + saved.getTitle(), saved.getId());
+        return saved;
     }
 
     public Incident startWork(String id) {
@@ -58,7 +65,10 @@ public class IncidentService {
         Incident incident = findById(id);
         incident.setStatus(IncidentStatus.RESOLVED);
         incident.setResolvedAt(Instant.now());
-        return repository.save(incident);
+        Incident saved = repository.save(incident);
+        notificationService.create(saved.getReporterEmail(), NotificationType.INCIDENT_RESOLVED,
+            "Your report is resolved: " + saved.getTitle(), saved.getId());
+        return saved;
     }
 
     public Incident close(String id) {
