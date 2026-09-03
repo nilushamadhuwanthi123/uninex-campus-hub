@@ -1,11 +1,17 @@
 package com.niluverse.uninex.config;
 
 import com.niluverse.uninex.auth.CustomOAuth2UserService;
+import java.util.Arrays;
+import java.util.List;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.http.HttpMethod;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.web.SecurityFilterChain;
+import org.springframework.web.cors.CorsConfiguration;
+import org.springframework.web.cors.CorsConfigurationSource;
+import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 
 /**
  * Real Google OAuth2 login + role-based authorization (Issue #5), replacing
@@ -23,6 +29,16 @@ public class SecurityConfig {
 
     private final CustomOAuth2UserService customOAuth2UserService;
 
+    /**
+     * Comma-separated list of frontend origins allowed to call this API with
+     * credentials. Defaults to the local Vite dev server; in production this
+     * is set via the FRONTEND_URL env var to the deployed frontend's real
+     * origin (e.g. the GitHub Pages URL) -- the frontend is deployed on a
+     * different origin than this API, so real CORS is required.
+     */
+    @Value("${app.frontend-url:http://localhost:5173}")
+    private String frontendUrl;
+
     public SecurityConfig(CustomOAuth2UserService customOAuth2UserService) {
         this.customOAuth2UserService = customOAuth2UserService;
     }
@@ -31,6 +47,7 @@ public class SecurityConfig {
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
         http
             .csrf(csrf -> csrf.disable())
+            .cors(cors -> cors.configurationSource(corsConfigurationSource()))
             .authorizeHttpRequests(auth -> auth
                 // Public read access -- anyone can browse resources/bookings/incidents/reviews.
                 .requestMatchers(HttpMethod.GET, "/api/resources/**", "/api/bookings/**",
@@ -67,5 +84,21 @@ public class SecurityConfig {
                 .userInfoEndpoint(userInfo -> userInfo.userService(customOAuth2UserService))
             );
         return http.build();
+    }
+
+    private CorsConfigurationSource corsConfigurationSource() {
+        CorsConfiguration configuration = new CorsConfiguration();
+        List<String> origins = Arrays.stream(frontendUrl.split(","))
+            .map(String::trim)
+            .filter(s -> !s.isEmpty())
+            .toList();
+        configuration.setAllowedOrigins(origins);
+        configuration.setAllowedMethods(List.of("GET", "POST", "PUT", "DELETE", "OPTIONS"));
+        configuration.setAllowedHeaders(List.of("*"));
+        configuration.setAllowCredentials(true);
+
+        UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
+        source.registerCorsConfiguration("/**", configuration);
+        return source;
     }
 }
