@@ -57,6 +57,10 @@ public class SecurityConfig {
                 .requestMatchers(HttpMethod.POST, "/api/bookings/**", "/api/incidents/**", "/api/reviews/**")
                     .authenticated()
 
+                // Notifications: reading/marking read/streaming your own inbox
+                // needs a real login -- this is private per-user data.
+                .requestMatchers("/api/notifications/**").authenticated()
+
                 .anyRequest().authenticated()
             )
             .oauth2Login(oauth2 -> oauth2

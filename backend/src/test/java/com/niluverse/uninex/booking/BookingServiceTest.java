@@ -5,8 +5,11 @@ import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyList;
 import static org.mockito.ArgumentMatchers.anyString;
+import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
+import com.niluverse.uninex.notification.NotificationService;
+import com.niluverse.uninex.notification.NotificationType;
 import java.time.Instant;
 import java.time.temporal.ChronoUnit;
 import java.util.List;
@@ -25,6 +28,9 @@ class BookingServiceTest {
     @Mock
     private QrCodeGenerator qrCodeGenerator;
 
+    @Mock
+    private NotificationService notificationService;
+
     private BookingService service;
 
     private final Instant future1h = Instant.now().plus(1, ChronoUnit.HOURS);
@@ -33,7 +39,7 @@ class BookingServiceTest {
 
     @BeforeEach
     void setUp() {
-        service = new BookingService(repository, qrCodeGenerator);
+        service = new BookingService(repository, qrCodeGenerator, notificationService);
     }
 
     @Test
@@ -135,6 +141,11 @@ class BookingServiceTest {
         assertThat(approved.getStatus()).isEqualTo(BookingStatus.APPROVED);
         assertThat(approved.getTicketCode()).startsWith("UNX-");
         assertThat(approved.getQrCodeBase64()).isEqualTo("fake-base64-png");
+        verify(notificationService).create(
+            org.mockito.ArgumentMatchers.eq("n@x.com"),
+            org.mockito.ArgumentMatchers.eq(NotificationType.BOOKING_APPROVED),
+            org.mockito.ArgumentMatchers.anyString(),
+            org.mockito.ArgumentMatchers.any());
     }
 
     @Test
@@ -148,5 +159,10 @@ class BookingServiceTest {
 
         assertThat(rejected.getStatus()).isEqualTo(BookingStatus.REJECTED);
         assertThat(rejected.getTicketCode()).isNull();
+        verify(notificationService).create(
+            org.mockito.ArgumentMatchers.eq("n@x.com"),
+            org.mockito.ArgumentMatchers.eq(NotificationType.BOOKING_REJECTED),
+            org.mockito.ArgumentMatchers.anyString(),
+            org.mockito.ArgumentMatchers.any());
     }
 }

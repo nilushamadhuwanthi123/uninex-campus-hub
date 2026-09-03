@@ -3,8 +3,11 @@ package com.niluverse.uninex.incident;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
+import com.niluverse.uninex.notification.NotificationService;
+import com.niluverse.uninex.notification.NotificationType;
 import java.util.Optional;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -18,11 +21,14 @@ class IncidentServiceTest {
     @Mock
     private IncidentRepository repository;
 
+    @Mock
+    private NotificationService notificationService;
+
     private IncidentService service;
 
     @BeforeEach
     void setUp() {
-        service = new IncidentService(repository);
+        service = new IncidentService(repository, notificationService);
     }
 
     private Incident sampleIncident() {
@@ -56,6 +62,11 @@ class IncidentServiceTest {
 
         assertThat(assigned.getAssignedTechnician()).isEqualTo("Kasun");
         assertThat(assigned.getStatus()).isEqualTo(IncidentStatus.ASSIGNED);
+        verify(notificationService).create(
+            org.mockito.ArgumentMatchers.eq("n@x.com"),
+            org.mockito.ArgumentMatchers.eq(NotificationType.INCIDENT_ASSIGNED),
+            org.mockito.ArgumentMatchers.anyString(),
+            org.mockito.ArgumentMatchers.any());
     }
 
     @Test
@@ -87,6 +98,11 @@ class IncidentServiceTest {
 
         assertThat(resolved.getStatus()).isEqualTo(IncidentStatus.RESOLVED);
         assertThat(resolved.getResolvedAt()).isNotNull();
+        verify(notificationService).create(
+            org.mockito.ArgumentMatchers.eq("n@x.com"),
+            org.mockito.ArgumentMatchers.eq(NotificationType.INCIDENT_RESOLVED),
+            org.mockito.ArgumentMatchers.anyString(),
+            org.mockito.ArgumentMatchers.any());
     }
 
     @Test
