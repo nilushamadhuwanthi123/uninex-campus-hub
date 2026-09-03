@@ -49,6 +49,7 @@ document shape, not mocked).
 - **Frontend:** React 19 + TypeScript, Vite, Tailwind CSS 4
 - **Database:** MongoDB (embedded MongoDB for tests, Docker Compose for local dev)
 - **Testing:** JUnit 5, Mockito, Spring `@DataMongoTest` / `@SpringBootTest` — see [`docs/TESTING.md`](docs/TESTING.md)
+- **Deployment:** Docker backend on Render + static frontend on GitHub Pages — see [`docs/DEPLOY.md`](docs/DEPLOY.md)
 
 ## Feature roadmap
 

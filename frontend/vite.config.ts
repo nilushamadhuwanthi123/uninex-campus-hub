@@ -3,7 +3,11 @@ import tailwindcss from '@tailwindcss/vite'
 import { defineConfig } from 'vite'
 
 // https://vite.dev/config/
-export default defineConfig({
+export default defineConfig(({ command }) => ({
+  // GitHub Pages serves this repo at /uninex-campus-hub/, not the domain
+  // root, so production asset URLs need that prefix. The dev server still
+  // serves from / so local development is unaffected.
+  base: command === 'build' ? '/uninex-campus-hub/' : '/',
   plugins: [react(), tailwindcss()],
   server: {
     proxy: {
@@ -15,4 +19,4 @@ export default defineConfig({
       '/login': 'http://localhost:8080',
     },
   },
-})
+}))
