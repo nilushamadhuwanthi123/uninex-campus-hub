@@ -19,11 +19,11 @@ setup is needed to run the suite locally.
 | Test class | Type | Tests | Result | Notes |
 |---|---|---|---|---|
 | `ResourceServiceTest` | Unit (Mockito, mocked repository) | 6 | ✅ Pass | create, findById (found + not-found), update, delete (existing + not-found) |
-| `BookingServiceTest` | Unit (Mockito, mocked repository) | 6 | ✅ Pass | create, invalid time range, same-seat overlap rejected, different-seat overlap allowed, full-resource booking blocks any overlap, non-overlapping windows allowed |
+| `BookingServiceTest` | Unit (Mockito, mocked repository) | 8 | ✅ Pass | create, invalid time range, same-seat overlap rejected, different-seat overlap allowed, full-resource booking blocks any overlap, non-overlapping windows allowed, approve generates ticket+QR, reject does not |
 | `ResourceRepositoryTest` | Integration (`@DataMongoTest`, real embedded Mongo) | 1 | ✅ Pass | Full save → find → update → delete round-trip against an actual MongoDB instance |
 | `UninexApplicationTests` | Context load (`@SpringBootTest`, real embedded Mongo) | 1 | ✅ Pass | Full Spring application context boots with a live database connection |
 
-**Total: 14 / 14 passing.**
+**Total: 16 / 16 passing.**
 
 ## What this covers
 

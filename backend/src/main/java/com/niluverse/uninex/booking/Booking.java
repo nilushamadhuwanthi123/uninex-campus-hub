@@ -28,6 +28,8 @@ public class Booking {
     private String requesterName;
     private String requesterEmail;
     private Instant createdAt = Instant.now();
+    private String ticketCode;
+    private String qrCodeBase64;
 
     public Booking() {
     }
@@ -116,5 +118,21 @@ public class Booking {
 
     public void setCreatedAt(Instant createdAt) {
         this.createdAt = createdAt;
+    }
+
+    public String getTicketCode() {
+        return ticketCode;
+    }
+
+    public void setTicketCode(String ticketCode) {
+        this.ticketCode = ticketCode;
+    }
+
+    public String getQrCodeBase64() {
+        return qrCodeBase64;
+    }
+
+    public void setQrCodeBase64(String qrCodeBase64) {
+        this.qrCodeBase64 = qrCodeBase64;
     }
 }

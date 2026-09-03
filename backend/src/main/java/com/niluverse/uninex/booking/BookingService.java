@@ -4,6 +4,7 @@ import java.time.Instant;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
+import java.util.UUID;
 import org.springframework.stereotype.Service;
 
 @Service
@@ -13,9 +14,11 @@ public class BookingService {
         List.of(BookingStatus.CANCELLED, BookingStatus.REJECTED);
 
     private final BookingRepository repository;
+    private final QrCodeGenerator qrCodeGenerator;
 
-    public BookingService(BookingRepository repository) {
+    public BookingService(BookingRepository repository, QrCodeGenerator qrCodeGenerator) {
         this.repository = repository;
+        this.qrCodeGenerator = qrCodeGenerator;
     }
 
     public List<Booking> findAll() {
@@ -62,6 +65,25 @@ public class BookingService {
 
     public void cancel(String id) {
         updateStatus(id, BookingStatus.CANCELLED);
+    }
+
+    /**
+     * Admin approves a booking: status flips to APPROVED and a QR-coded
+     * ticket is generated. The QR payload is the ticket code itself (not
+     * the raw booking id) so a scanner/verifier only needs to compare
+     * strings, not look up internal ids.
+     */
+    public Booking approve(String id) {
+        Booking booking = findById(id);
+        booking.setStatus(BookingStatus.APPROVED);
+        String ticketCode = "UNX-" + UUID.randomUUID().toString().substring(0, 8).toUpperCase();
+        booking.setTicketCode(ticketCode);
+        booking.setQrCodeBase64(qrCodeGenerator.generateBase64Png(ticketCode));
+        return repository.save(booking);
+    }
+
+    public Booking reject(String id) {
+        return updateStatus(id, BookingStatus.REJECTED);
     }
 
     private boolean overlapsInTime(Booking a, Booking b) {
