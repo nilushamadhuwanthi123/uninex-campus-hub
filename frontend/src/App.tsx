@@ -1,4 +1,5 @@
 import { useState } from 'react'
+import HomePage from './pages/HomePage'
 import ResourcesPage from './pages/ResourcesPage'
 import BookingsPage from './pages/BookingsPage'
 import IncidentsPage from './pages/IncidentsPage'
@@ -6,6 +7,7 @@ import ReviewsPage from './pages/ReviewsPage'
 import DashboardPage from './pages/DashboardPage'
 
 const TABS = [
+  { key: 'home', label: 'Home', Page: HomePage },
   { key: 'dashboard', label: 'Dashboard', Page: DashboardPage },
   { key: 'resources', label: 'Resources', Page: ResourcesPage },
   { key: 'bookings', label: 'Bookings', Page: BookingsPage },
@@ -13,9 +15,17 @@ const TABS = [
   { key: 'reviews', label: 'Reviews', Page: ReviewsPage },
 ] as const
 
+type TabKey = (typeof TABS)[number]['key']
+
 function App() {
-  const [active, setActive] = useState<(typeof TABS)[number]['key']>('dashboard')
+  const [active, setActive] = useState<TabKey>('home')
   const ActivePage = TABS.find((t) => t.key === active)!.Page
+
+  function navigate(tab: string) {
+    if (TABS.some((t) => t.key === tab)) {
+      setActive(tab as TabKey)
+    }
+  }
 
   return (
     <div className="min-h-screen">
@@ -41,7 +51,7 @@ function App() {
       </nav>
 
       <main className="mx-auto max-w-5xl px-6 py-8">
-        <ActivePage />
+        <ActivePage onNavigate={navigate} />
       </main>
     </div>
   )
