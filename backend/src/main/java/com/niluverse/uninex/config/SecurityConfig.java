@@ -37,6 +37,10 @@ public class SecurityConfig {
                     "/api/incidents/**", "/api/reviews/**").permitAll()
                 .requestMatchers("/api/auth/me").permitAll()
 
+                // Usage-insights dashboard is staff-facing operational data,
+                // not a public read.
+                .requestMatchers("/api/analytics/**").hasAnyRole("STAFF", "ADMIN")
+
                 // Staff/admin-only actions -- must be listed before the broader
                 // POST/DELETE rules below so they aren't shadowed.
                 .requestMatchers("/api/bookings/*/approve", "/api/bookings/*/reject").hasAnyRole("STAFF", "ADMIN")
