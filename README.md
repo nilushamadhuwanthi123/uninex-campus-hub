@@ -4,7 +4,7 @@
 ![Spring Boot](https://img.shields.io/badge/Spring%20Boot-3.5.16-brightgreen)
 ![React](https://img.shields.io/badge/React-19-61DAFB)
 ![MongoDB](https://img.shields.io/badge/MongoDB-8-47A248)
-![Tests](https://img.shields.io/badge/tests-22%2F22%20passing-success)
+![Tests](https://img.shields.io/badge/tests-25%2F25%20passing-success)
 
 Smart campus resource management and booking system — solo build, own
 implementation from scratch. Same problem space as a typical university
@@ -39,7 +39,7 @@ its own pull request.
 | [#2](https://github.com/nilushamadhuwanthi123/uninex-campus-hub/issues/2) | Booking system: time slots + full-hall reservation | ✅ Done |
 | [#3](https://github.com/nilushamadhuwanthi123/uninex-campus-hub/issues/3) | Admin approval workflow + QR ticket generation | ✅ Done |
 | [#4](https://github.com/nilushamadhuwanthi123/uninex-campus-hub/issues/4) | Incident ticket system with technician assignment | ✅ Done |
-| [#5](https://github.com/nilushamadhuwanthi123/uninex-campus-hub/issues/5) | Google OAuth2 login + role-based access | ⏳ Planned |
+| [#5](https://github.com/nilushamadhuwanthi123/uninex-campus-hub/issues/5) | Google OAuth2 login + role-based access | ✅ Done |
 | [#6](https://github.com/nilushamadhuwanthi123/uninex-campus-hub/issues/6) | Review, rating and feedback system | ⏳ Planned |
 | [#7](https://github.com/nilushamadhuwanthi123/uninex-campus-hub/issues/7) | Analytics dashboard for usage insights | ⏳ Planned |
 | [#8](https://github.com/nilushamadhuwanthi123/uninex-campus-hub/issues/8) | Real-time notifications | ⏳ Planned |
@@ -83,6 +83,37 @@ and a lifecycle from report to resolution.
 | `POST` | `/api/incidents/{id}/resolve` | Mark resolved |
 | `POST` | `/api/incidents/{id}/close` | Close the ticket |
 
+`Auth` = the currently logged-in user's own identity, via Google OAuth2
+login. Every user starts as `STUDENT` on first login; `STAFF`/`ADMIN` is
+granted manually in the database — there is no self-service promotion.
+
+| Method | Endpoint | Description |
+|---|---|---|
+| `GET` | `/api/auth/me` | Current logged-in user's email, name and role (`401` if not logged in) |
+
+Endpoints that change data (create/update/delete a resource, approve or
+reject a booking, assign/resolve an incident) require a logged-in user;
+staff-only actions require the `STAFF` or `ADMIN` role. All role checks
+happen server-side on every request — nothing about who can do what is
+decided by the frontend.
+
+### Auth setup
+
+Real Google login needs your own OAuth2 credentials from
+[Google Cloud Console](https://console.cloud.google.com/apis/credentials)
+(OAuth consent screen + a Web application client). Set them as environment
+variables before starting the backend — they are never committed:
+
+```
+set GOOGLE_CLIENT_ID=your-client-id
+set GOOGLE_CLIENT_SECRET=your-client-secret
+```
+
+Without these set, the app still starts and all non-auth features work —
+`GOOGLE_CLIENT_ID`/`GOOGLE_CLIENT_SECRET` fall back to harmless demo values
+that let Spring Security boot, but real Google login will not succeed
+until real credentials are provided.
+
 ## Running locally
 
 Backend:
@@ -109,10 +140,11 @@ cd backend
 ./mvnw test
 ```
 
-22/22 tests passing as of the latest run — unit tests for the service layer
-plus real database-backed integration tests (embedded MongoDB, no external
-setup needed). Full breakdown, coverage, and known gaps are tracked
-honestly in [`docs/TESTING.md`](docs/TESTING.md).
+25/25 tests passing as of the latest run — unit tests for the service layer
+(including the Google login → role mapping logic) plus real database-backed
+integration tests (embedded MongoDB, no external setup needed). Full
+breakdown, coverage, and known gaps are tracked honestly in
+[`docs/TESTING.md`](docs/TESTING.md).
 
 ## Workflow
 
