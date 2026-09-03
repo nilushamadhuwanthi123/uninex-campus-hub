@@ -18,8 +18,9 @@ real GitHub issues, branches and pull requests.
   <img src="docs/screenshots/frontend-hero.png" alt="Uninex frontend scaffold" width="720">
 </p>
 
-*Early scaffold — frontend and backend wired together. Screens for each
-feature land as their branch merges.*
+*Screenshot above is from the early scaffold. The frontend has since grown
+real pages for every feature below (Dashboard, Resources, Bookings,
+Incidents, Reviews) — a refreshed screenshot is pending.*
 
 ## Stack
 
@@ -43,6 +44,22 @@ its own pull request.
 | [#6](https://github.com/nilushamadhuwanthi123/uninex-campus-hub/issues/6) | Review, rating and feedback system | ✅ Done |
 | [#7](https://github.com/nilushamadhuwanthi123/uninex-campus-hub/issues/7) | Analytics dashboard for usage insights | ✅ Done |
 | [#8](https://github.com/nilushamadhuwanthi123/uninex-campus-hub/issues/8) | Real-time notifications | ✅ Done |
+| [#20](https://github.com/nilushamadhuwanthi123/uninex-campus-hub/issues/20) | Core frontend pages (Resources, Bookings, Incidents, Reviews, Dashboard) | ✅ Done |
+
+## Frontend
+
+Real pages, each talking to the live backend endpoints documented below —
+no mock data:
+
+- **Dashboard** — shows the current signed-in user (`/api/auth/me`) with a
+  real "Sign in with Google" link when signed out; STAFF/ADMIN users also
+  see the live analytics summary.
+- **Resources** — lists all bookable resources.
+- **Bookings** — lists bookings and lets a signed-in user submit a new
+  booking request.
+- **Incidents** — lists incidents and lets a user report a new one.
+- **Reviews** — pick a resource, see its live average rating, and leave a
+  review.
 
 ## API (so far)
 

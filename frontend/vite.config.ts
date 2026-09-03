@@ -8,6 +8,11 @@ export default defineConfig({
   server: {
     proxy: {
       '/api': 'http://localhost:8080',
+      // Spring Security's real OAuth2 login endpoints -- proxied too so
+      // "Sign in with Google" works from the Vite dev server without a
+      // separate backend origin.
+      '/oauth2': 'http://localhost:8080',
+      '/login': 'http://localhost:8080',
     },
   },
 })
