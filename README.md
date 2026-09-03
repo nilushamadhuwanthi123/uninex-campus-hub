@@ -12,15 +12,36 @@ resource-booking system (seat/hall booking, admin approval, incident
 tracking), built end-to-end by one person, feature by feature, through
 real GitHub issues, branches and pull requests.
 
-## Screenshot
+## Screenshots
+
+Real pages, running against the real backend and a real MongoDB instance
+(the resources shown below were seeded through the actual `Resource`
+document shape, not mocked).
 
 <p align="center">
-  <img src="docs/screenshots/frontend-hero.png" alt="Uninex frontend scaffold" width="720">
+  <img src="docs/screenshots/dashboard.png" alt="Dashboard - signed out state" width="720"><br>
+  <sub>Dashboard — signed out, with the real Google OAuth2 sign-in link</sub>
 </p>
 
-*Screenshot above is from the early scaffold. The frontend has since grown
-real pages for every feature below (Dashboard, Resources, Bookings,
-Incidents, Reviews) — a refreshed screenshot is pending.*
+<p align="center">
+  <img src="docs/screenshots/resources.png" alt="Resources page" width="720"><br>
+  <sub>Resources — live from <code>/api/resources</code></sub>
+</p>
+
+<p align="center">
+  <img src="docs/screenshots/bookings.png" alt="Bookings page" width="720"><br>
+  <sub>Bookings — list plus a real booking request form</sub>
+</p>
+
+<p align="center">
+  <img src="docs/screenshots/incidents.png" alt="Incidents page" width="720"><br>
+  <sub>Incidents — list plus a real incident report form</sub>
+</p>
+
+<p align="center">
+  <img src="docs/screenshots/reviews.png" alt="Reviews page" width="720"><br>
+  <sub>Reviews — resource picker with a live average rating and review form</sub>
+</p>
 
 ## Stack
 
