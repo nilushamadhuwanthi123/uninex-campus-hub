@@ -1,5 +1,6 @@
 import { useEffect, useState, type FormEvent } from 'react'
 import { api, ApiError } from '../lib/api'
+import { useSlowLoad } from '../lib/useSlowLoad'
 import type { Booking, Resource } from '../lib/types'
 import StatusBadge from '../components/StatusBadge'
 
@@ -9,6 +10,7 @@ export default function BookingsPage() {
   const [error, setError] = useState<string | null>(null)
   const [formError, setFormError] = useState<string | null>(null)
   const [submitting, setSubmitting] = useState(false)
+  const slowLoad = useSlowLoad(bookings === null && !error)
 
   function reload() {
     api
@@ -57,7 +59,13 @@ export default function BookingsPage() {
     <div className="grid gap-6 lg:grid-cols-[1fr_320px]">
       <div>
         {error && <p className="text-red-300">{error}</p>}
-        {!error && !bookings && <p className="text-cream/60">Loading bookings...</p>}
+        {!error && !bookings && (
+          <p className="text-cream/60">
+            {slowLoad
+              ? "Waking up the server — this can take up to a minute after it's been idle. Hang tight..."
+              : 'Loading bookings...'}
+          </p>
+        )}
         {bookings && bookings.length === 0 && (
           <p className="text-cream/60">No bookings yet — be the first to request one.</p>
         )}
@@ -85,7 +93,9 @@ export default function BookingsPage() {
       <form onSubmit={handleSubmit} className="h-fit rounded-lg border border-gold/20 bg-navy-soft p-4 space-y-3">
         <h3 className="font-semibold text-cream">Request a booking</h3>
         <select name="resourceId" required className="w-full rounded bg-navy border border-gold/20 p-2 text-sm">
-          <option value="">Select a resource</option>
+          <option value="">
+            {resources.length === 0 ? 'Loading resources...' : 'Select a resource'}
+          </option>
           {resources.map((r) => (
             <option key={r.id} value={r.id}>{r.name}</option>
           ))}

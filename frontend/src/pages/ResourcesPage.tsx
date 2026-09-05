@@ -1,10 +1,12 @@
 import { useEffect, useState } from 'react'
 import { api, ApiError } from '../lib/api'
+import { useSlowLoad } from '../lib/useSlowLoad'
 import type { Resource } from '../lib/types'
 
 export default function ResourcesPage() {
   const [resources, setResources] = useState<Resource[] | null>(null)
   const [error, setError] = useState<string | null>(null)
+  const slowLoad = useSlowLoad(resources === null && !error)
 
   useEffect(() => {
     api
@@ -19,7 +21,13 @@ export default function ResourcesPage() {
     return <p className="text-red-300">{error}</p>
   }
   if (!resources) {
-    return <p className="text-cream/60">Loading resources...</p>
+    return (
+      <p className="text-cream/60">
+        {slowLoad
+          ? "Waking up the server — this can take up to a minute after it's been idle. Hang tight..."
+          : 'Loading resources...'}
+      </p>
+    )
   }
   if (resources.length === 0) {
     return (
