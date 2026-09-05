@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react'
-import { api, ApiError } from '../lib/api'
+import { api, ApiError, API_BASE_URL } from '../lib/api'
 import TiltCard from '../components/TiltCard'
 import type { AnalyticsSummary, CurrentUser } from '../lib/types'
 
@@ -37,7 +37,7 @@ export default function DashboardPage() {
         <div className="rounded-lg border border-gold/20 bg-navy-soft p-6 text-center">
           <p className="text-cream/70">You're not signed in.</p>
           <a
-            href="/oauth2/authorization/google"
+            href={`${API_BASE_URL}/oauth2/authorization/google`}
             className="mt-4 inline-block rounded bg-gold px-4 py-2 text-sm font-medium text-navy"
           >
             Sign in with Google

@@ -4,7 +4,7 @@
 // on different origins, so VITE_API_BASE_URL (set at build time, see
 // the deploy workflow) is prefixed onto every request instead.
 
-const API_BASE_URL = import.meta.env.VITE_API_BASE_URL ?? ''
+export const API_BASE_URL = import.meta.env.VITE_API_BASE_URL ?? ''
 
 export class ApiError extends Error {
   status: number
