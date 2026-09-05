@@ -82,8 +82,28 @@ public class SecurityConfig {
             )
             .oauth2Login(oauth2 -> oauth2
                 .userInfoEndpoint(userInfo -> userInfo.userService(customOAuth2UserService))
+                // Without this, Spring Security's default post-login redirect
+                // is "/" on THIS API's own origin, which has no such mapping
+                // and 404s to the Whitelabel error page -- the browser never
+                // makes it back to the frontend after a successful Google
+                // login. Send it back to the deployed frontend instead (first
+                // entry of app.frontend-url, since that property can be a
+                // comma-separated list of allowed CORS origins).
+                //
+                // The frontend is a single-page tab-switcher with no
+                // client-side router (see App.tsx -- tabs are plain
+                // useState, not URL routes), so there is no "/dashboard"
+                // path to redirect to; only the root path is ever a real,
+                // servable page on GitHub Pages. Landing on the root and
+                // clicking the Dashboard tab is a minor extra click, not
+                // another 404.
+                .defaultSuccessUrl(primaryFrontendUrl(), true)
             );
         return http.build();
+    }
+
+    private String primaryFrontendUrl() {
+        return frontendUrl.split(",")[0].trim();
     }
 
     private CorsConfigurationSource corsConfigurationSource() {
