@@ -39,6 +39,20 @@ public class SecurityConfig {
     @Value("${app.frontend-url:http://localhost:5173}")
     private String frontendUrl;
 
+    /**
+     * Where to send the browser after a successful Google login. Kept
+     * separate from frontendUrl above: that property is a bare origin used
+     * for CORS, where only scheme+host+port matter and any path is ignored
+     * -- but a GitHub Pages *project* site (as opposed to a user/org site)
+     * serves the app from a subpath named after the repo, e.g.
+     * "https://user.github.io/repo-name/". Redirecting to the bare origin
+     * for a project site 404s ("Site not found") because nothing is
+     * served at the domain root. Defaults to frontendUrl when unset, which
+     * is correct for local dev and for a user/org Pages site.
+     */
+    @Value("${app.frontend-login-redirect-url:${app.frontend-url:http://localhost:5173}}")
+    private String frontendLoginRedirectUrl;
+
     public SecurityConfig(CustomOAuth2UserService customOAuth2UserService) {
         this.customOAuth2UserService = customOAuth2UserService;
     }
@@ -86,24 +100,19 @@ public class SecurityConfig {
                 // is "/" on THIS API's own origin, which has no such mapping
                 // and 404s to the Whitelabel error page -- the browser never
                 // makes it back to the frontend after a successful Google
-                // login. Send it back to the deployed frontend instead (first
-                // entry of app.frontend-url, since that property can be a
-                // comma-separated list of allowed CORS origins).
+                // login. Send it back to the real deployed frontend page
+                // instead (see frontendLoginRedirectUrl above for why this
+                // is a separate property from the bare CORS origin).
                 //
                 // The frontend is a single-page tab-switcher with no
                 // client-side router (see App.tsx -- tabs are plain
                 // useState, not URL routes), so there is no "/dashboard"
-                // path to redirect to; only the root path is ever a real,
-                // servable page on GitHub Pages. Landing on the root and
-                // clicking the Dashboard tab is a minor extra click, not
-                // another 404.
-                .defaultSuccessUrl(primaryFrontendUrl(), true)
+                // path to redirect to beyond frontendLoginRedirectUrl
+                // itself; landing there and clicking the Dashboard tab is a
+                // minor extra click, not another 404.
+                .defaultSuccessUrl(frontendLoginRedirectUrl.trim(), true)
             );
         return http.build();
-    }
-
-    private String primaryFrontendUrl() {
-        return frontendUrl.split(",")[0].trim();
     }
 
     private CorsConfigurationSource corsConfigurationSource() {
