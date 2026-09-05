@@ -13,6 +13,11 @@ services:
         sync: false
       - key: FRONTEND_URL
         sync: false
+      # Set in the dashboard to the deployed frontend's real page URL --
+      # for a GitHub Pages project site that includes the repo subpath,
+      # which FRONTEND_URL (a bare origin, for CORS) does not carry.
+      - key: FRONTEND_LOGIN_REDIRECT_URL
+        sync: false
       - key: GOOGLE_CLIENT_ID
         sync: false
       - key: GOOGLE_CLIENT_SECRET
