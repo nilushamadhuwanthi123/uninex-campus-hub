@@ -1,6 +1,10 @@
 package com.niluverse.uninex.config;
 
+import com.niluverse.uninex.auth.ApiTokenAuthenticationFilter;
+import com.niluverse.uninex.auth.ApiTokenService;
 import com.niluverse.uninex.auth.CustomOAuth2UserService;
+import com.niluverse.uninex.auth.TokenIssuingLoginSuccessHandler;
+import com.niluverse.uninex.auth.UserRepository;
 import java.util.Arrays;
 import java.util.List;
 import org.springframework.beans.factory.annotation.Value;
@@ -11,6 +15,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.HttpStatusEntryPoint;
+import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 import org.springframework.web.cors.CorsConfiguration;
 import org.springframework.web.cors.CorsConfigurationSource;
 import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
@@ -30,6 +35,8 @@ import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 public class SecurityConfig {
 
     private final CustomOAuth2UserService customOAuth2UserService;
+    private final ApiTokenService apiTokenService;
+    private final UserRepository userRepository;
 
     /**
      * Comma-separated list of frontend origins allowed to call this API with
@@ -55,8 +62,11 @@ public class SecurityConfig {
     @Value("${app.frontend-login-redirect-url:${app.frontend-url:http://localhost:5173}}")
     private String frontendLoginRedirectUrl;
 
-    public SecurityConfig(CustomOAuth2UserService customOAuth2UserService) {
+    public SecurityConfig(CustomOAuth2UserService customOAuth2UserService,
+        ApiTokenService apiTokenService, UserRepository userRepository) {
         this.customOAuth2UserService = customOAuth2UserService;
+        this.apiTokenService = apiTokenService;
+        this.userRepository = userRepository;
     }
 
     @Bean
@@ -98,22 +108,25 @@ public class SecurityConfig {
             )
             .oauth2Login(oauth2 -> oauth2
                 .userInfoEndpoint(userInfo -> userInfo.userService(customOAuth2UserService))
-                // Without this, Spring Security's default post-login redirect
-                // is "/" on THIS API's own origin, which has no such mapping
-                // and 404s to the Whitelabel error page -- the browser never
-                // makes it back to the frontend after a successful Google
-                // login. Send it back to the real deployed frontend page
-                // instead (see frontendLoginRedirectUrl above for why this
-                // is a separate property from the bare CORS origin).
+                // Where the browser goes after Google confirms the
+                // login, and how it proves who it is once it gets there.
                 //
-                // The frontend is a single-page tab-switcher with no
-                // client-side router (see App.tsx -- tabs are plain
-                // useState, not URL routes), so there is no "/dashboard"
-                // path to redirect to beyond frontendLoginRedirectUrl
-                // itself; landing there and clicking the Dashboard tab is a
-                // minor extra click, not another 404.
-                .defaultSuccessUrl(frontendLoginRedirectUrl.trim(), true)
+                // Left to itself Spring Security would redirect to "/" on
+                // THIS API's origin, which has no mapping and 404s, and it
+                // would leave the browser relying on this API's session
+                // cookie -- a third-party cookie to a page served from
+                // GitHub Pages, which browsers block. That combination is
+                // why login kept appearing to succeed while every request
+                // after it arrived anonymous.
+                //
+                // The handler below instead issues an API token and sends
+                // the browser to the real frontend page carrying it, which
+                // no cookie policy applies to. See ApiTokenService.
+                .successHandler(new TokenIssuingLoginSuccessHandler(
+                    apiTokenService, userRepository, frontendLoginRedirectUrl.trim()))
             )
+            .addFilterBefore(new ApiTokenAuthenticationFilter(apiTokenService),
+                UsernamePasswordAuthenticationFilter.class)
             .exceptionHandling(ex -> ex
                 // Everything the frontend sends is fetch/XHR, not a page
                 // navigation. Spring Security's entry point for oauth2Login

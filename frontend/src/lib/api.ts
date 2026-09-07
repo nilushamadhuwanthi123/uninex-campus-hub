@@ -4,6 +4,8 @@
 // on different origins, so VITE_API_BASE_URL (set at build time, see
 // the deploy workflow) is prefixed onto every request instead.
 
+import { getToken } from './auth'
+
 export const API_BASE_URL = import.meta.env.VITE_API_BASE_URL ?? ''
 
 export class ApiError extends Error {
@@ -16,10 +18,23 @@ export class ApiError extends Error {
 }
 
 async function request<T>(path: string, options: RequestInit = {}): Promise<T> {
+  // The token is how a signed-in user is recognised in production, where
+  // the API's session cookie is blocked as third-party (see lib/auth.ts).
+  // credentials: 'include' stays for local development, where the Vite
+  // proxy makes these calls same-origin and the cookie does work.
+  const token = getToken()
+  const headers: Record<string, string> = {
+    'Content-Type': 'application/json',
+    ...(options.headers as Record<string, string> | undefined),
+  }
+  if (token) {
+    headers.Authorization = `Bearer ${token}`
+  }
+
   const response = await fetch(`${API_BASE_URL}${path}`, {
-    credentials: 'include',
-    headers: { 'Content-Type': 'application/json', ...options.headers },
     ...options,
+    credentials: 'include',
+    headers,
   })
 
   if (response.status === 204) {
