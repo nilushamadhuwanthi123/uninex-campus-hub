@@ -1,5 +1,6 @@
 import { useEffect, useState } from 'react'
 import { api, ApiError, API_BASE_URL } from '../lib/api'
+import { clearToken } from '../lib/auth'
 import TiltCard from '../components/TiltCard'
 import type { AnalyticsSummary, CurrentUser } from '../lib/types'
 
@@ -56,6 +57,16 @@ export default function DashboardPage() {
           <p className="mt-1 text-xs uppercase tracking-widest text-gold">
             {user.roles.map((r) => r.authority.replace('ROLE_', '')).join(', ')}
           </p>
+          <button
+            type="button"
+            onClick={() => {
+              clearToken()
+              window.location.reload()
+            }}
+            className="mt-3 rounded border border-gold/30 px-3 py-1 text-xs text-cream/70 hover:text-cream"
+          >
+            Sign out
+          </button>
         </div>
       </TiltCard>
 

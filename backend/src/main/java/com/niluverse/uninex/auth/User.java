@@ -22,6 +22,15 @@ public class User {
     private Role role = Role.STUDENT;
     private Instant createdAt = Instant.now();
 
+    /**
+     * SHA-256 of the API token this user was last issued, or null if they
+     * have none. Only the hash is stored: a dump of this collection then
+     * cannot be replayed as a set of live logins. See ApiTokenService.
+     */
+    private String apiTokenHash;
+
+    private Instant apiTokenExpiresAt;
+
     public User() {
     }
 
@@ -79,5 +88,21 @@ public class User {
 
     public void setCreatedAt(Instant createdAt) {
         this.createdAt = createdAt;
+    }
+
+    public String getApiTokenHash() {
+        return apiTokenHash;
+    }
+
+    public void setApiTokenHash(String apiTokenHash) {
+        this.apiTokenHash = apiTokenHash;
+    }
+
+    public Instant getApiTokenExpiresAt() {
+        return apiTokenExpiresAt;
+    }
+
+    public void setApiTokenExpiresAt(Instant apiTokenExpiresAt) {
+        this.apiTokenExpiresAt = apiTokenExpiresAt;
     }
 }
