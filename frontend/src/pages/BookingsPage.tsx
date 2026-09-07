@@ -44,7 +44,7 @@ export default function BookingsPage() {
       reload()
     } catch (err) {
       if (err instanceof ApiError && err.status === 401) {
-        setFormError('You need to sign in with Google before requesting a booking.')
+        setFormError('You need to sign in before requesting a booking — open the Dashboard tab to sign in with Google.')
       } else if (err instanceof ApiError) {
         setFormError(err.message)
       } else {

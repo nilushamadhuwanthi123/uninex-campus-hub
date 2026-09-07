@@ -7,8 +7,10 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.http.HttpMethod;
+import org.springframework.http.HttpStatus;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.web.SecurityFilterChain;
+import org.springframework.security.web.authentication.HttpStatusEntryPoint;
 import org.springframework.web.cors.CorsConfiguration;
 import org.springframework.web.cors.CorsConfigurationSource;
 import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
@@ -111,6 +113,21 @@ public class SecurityConfig {
                 // itself; landing there and clicking the Dashboard tab is a
                 // minor extra click, not another 404.
                 .defaultSuccessUrl(frontendLoginRedirectUrl.trim(), true)
+            )
+            .exceptionHandling(ex -> ex
+                // Everything the frontend sends is fetch/XHR, not a page
+                // navigation. Spring Security's entry point for oauth2Login
+                // answers an unauthenticated request with a redirect to
+                // Google, which fetch cannot follow cross-origin -- so
+                // instead of a readable status the page gets an opaque
+                // network error, and a signed-out user is told
+                // "Something went wrong" when the real reason is simply
+                // that they need to sign in. Answer /api calls with a
+                // plain 401 so the page can say that; real browser
+                // navigations still get the redirect and log in normally.
+                .defaultAuthenticationEntryPointFor(
+                    new HttpStatusEntryPoint(HttpStatus.UNAUTHORIZED),
+                    request -> request.getRequestURI().startsWith("/api/"))
             );
         return http.build();
     }
